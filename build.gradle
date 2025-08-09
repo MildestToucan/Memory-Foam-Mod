@@ -167,11 +167,12 @@ dependencies {
     //MixinExtras
     compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.5.0"))
     implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.5.0")) {
-        jarJar.ranged(it, "[0.5.0)")
+        jarJar.ranged(it, "[0.5.0]")
     }
     //Sponge Mixins
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
+    //Handcrafted
     implementation fg.deobf("maven.modrinth:handcrafted:3.0.6")
     implementation fg.deobf("maven.modrinth:resourceful-lib:2.1.29")
 
