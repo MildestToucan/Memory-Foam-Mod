@@ -11,7 +11,15 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
 
-// The value here should match an entry in the META-INF/mods.toml file
+/**
+ * Main mod file for Memory Foam, in this branch specifically: <br>
+ * Modloader: Forge 47.4.0 <br>
+ * Minecraft version: 1.20.1 <br>
+ * Note: Will likely forget to update these numbers accurately. See {@code build.gradle} for internal versions. <br>
+ * If the versions are off from what they're supposed to be, open an issue.
+ * @version 0.0.1-POC
+ * @author GauntRecluse
+ */
 @Mod(MemoryFoam.MODID)
 public class MemoryFoam {
 
@@ -19,20 +27,19 @@ public class MemoryFoam {
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public MemoryFoam() {
-        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus(); //TODO: Figure out whether it matters that .get() is deprecated for removal.
 
-        // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
 
-        // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
 
         MinecraftForge.EVENT_BUS.addListener(this::playerWakeUpEventHandler);
+        LOGGER.warn("Memory Foam is only a proof of concept at the moment, here be dragons and lack of features!");
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
-        LOGGER.info("Common setup firing");
-        SleepingOperations.bedToEffectRegistry.put(FancyBedBlock.class, MobEffects.NIGHT_VISION);
+        LOGGER.info("Registering bed-effect associations...");
+        SleepingOperations.bedToEffectRegistry.put(FancyBedBlock.class, MobEffects.REGENERATION);
     }
 
 

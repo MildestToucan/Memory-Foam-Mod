@@ -20,13 +20,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(value = BedBlock.class)
 public abstract class BedBlockMixin extends HorizontalDirectionalBlock implements EntityBlock {
 
-
+    //Constructor ignored by Mixin.
     protected BedBlockMixin(Properties pProperties) {
         super(pProperties);
     }
 
-
-    @Inject(method = "use", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;startSleepInBed(Lnet/minecraft/core/BlockPos;)Lcom/mojang/datafixers/util/Either;"))
+    @Inject(method = "use", at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/world/entity/player/Player;startSleepInBed(Lnet/minecraft/core/BlockPos;)Lcom/mojang/datafixers/util/Either;"
+            )
+    )
     private void stub(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit, CallbackInfoReturnable<InteractionResult> cir) {
         SleepingOperations.registerPlayerAndBed(pPlayer, (BedBlock)(Object)this);
     }
