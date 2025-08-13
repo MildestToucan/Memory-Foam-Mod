@@ -7,13 +7,13 @@ All dates are in the DD/MM/YYYY format such that 08/10/2002 means "Eigth of Octo
 [GauntRecluse](https://github.com/MildestToucan) - Primary Author/Initial Creator  
 
 
-### Modloaders and Modding APIs:
+### Modloaders and Modding APIs:  
 **Forge** by Forge team  
 [License](https://github.com/MinecraftForge/MinecraftForge/blob/0.21.x/LICENSE.txt) (LGPL v2.1 with custom header as of 09/08/2025)  
 [Forge's own credits](https://github.com/MinecraftForge/MinecraftForge/blob/1.20.1/CREDITS.txt)  
 ==  
 
-### Sponge Mixins and MixinExtras:
+### Sponge Mixins and MixinExtras:  
 **Sponge Mixins** by Mumfrey and contributors  
 [License](https://github.com/SpongePowered/Mixin/blob/master/LICENSE.txt) (MIT as of 09/08/2025)  
 ==  
@@ -31,6 +31,6 @@ Minecraft is owned by Microsoft and developed by Mojang, see their EULA for modd
 [EULA](https://www.minecraft.net/en-us/eula) (permits non-commercial modding as of 13/08/2025)  
 Microsoft retains all rights to Mojang's official mappings and to Minecraft's code.
 
-## SPECIAL THANKS:
+## SPECIAL THANKS:  
 My mother - being an absolute Saint  
 IntelliJ IDEa - breaking down on me mid-development
