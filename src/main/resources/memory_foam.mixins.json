@@ -2,10 +2,11 @@
   "required": true,
   "minVersion": "0.8",
   "package": "net.gauntrecluse.memory_foam.mixin",
-  "compatibilityLevel": "JAVA_8",
+  "compatibilityLevel": "JAVA_17",
   "refmap": "memory_foam.refmap.json",
   "mixins": [
-    "BedBlockMixin"
+    "LivingEntityMixin",
+    "ServerLevelMixin"
   ],
   "client": [
   ],

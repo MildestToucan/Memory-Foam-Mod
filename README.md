@@ -2,14 +2,15 @@
 
 Memory Foam
 ======
-A simple mod that adds a potion effect whenever you sleep in a specific type of bed.  
-Only a proof of concept for now, gives 15 seconds of regeneration when waking up from the Handcrafted Fancy Bed.  
-In the future, this mod will be mod-agnostic and configurable, with the idea of allowing server owners and modpack creators to add 
-different effects based on the bed the player sleeps in.  
-Ports to other modloaders and MC versions in the future.
+A simple mod that adds a potion effect whenever you sleep in a specific type of bed. This mod was the result of a mod request.  
+Mainly intended to be used by modpack devs and server owners.  
+Ports to other modloaders and MC versions soon.
 
 
-### Installation and info
-Currently depends on Handcrafted 3.0.6 or above for Forge 1.20.1  
-This mod is purely server-sided.  
-This mod is licensed under the MIT license, do whatever you must with it as long as you give proper credit.
+### Installation and info  
+This mod has a config stored as a memoryfoamconfig.toml file. Said file has comments for specific instructions on how to configure the mod for beds and effects.  
+The mod can be configured to give players effects when they sleep in a bed. This supports effects that use MobEffectInstance to apply to a player, and beds that extend the BedBlock class.  
+Memory Foam's config system very much assumes that you are able to look at other installed mods' source code for class names and resourcelocations.  
+It is also possible to create an add-on ontop of MemoryFoam that adds your own custom set of bed type to effect associations if the config is insufficient.  
+
+Memory Foam works exclusively on the server side, and creates a new config for every new world file, and requires a world restart before a config changes.

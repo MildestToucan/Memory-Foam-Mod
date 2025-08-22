@@ -1,6 +1,5 @@
 buildscript {
     repositories {
-        // These repositories are only for Gradle plugins, put any other repositories in the repository block further below
         maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
         mavenCentral()
     }
@@ -138,19 +137,19 @@ repositories {
     // Put repositories for dependencies here
     // ForgeGradle automatically adds the Forge maven and Maven Central for you
 
-
-    exclusiveContent{
-        forRepository{
-            maven{
-                name = "Modrinth"
-                url = "https://api.modrinth.com/maven"
-            }
-        }
-        forRepositories(fg.repository)
-        filter {
-            includeGroup "maven.modrinth"
-        }
-    }
+    //Useless once handcrafted is removed. TODO: Remove once handcrafted dependency is removed.
+//    exclusiveContent{
+//        forRepository{
+//            maven{
+//                name = "Modrinth"
+//                url = "https://api.modrinth.com/maven"
+//            }
+//        }
+//        forRepositories(fg.repository)
+//        filter {
+//            includeGroup "maven.modrinth"
+//        }
+//    }
 
 
     // If you have mod jar dependencies in ./libs, you can declare them as a repository like so.
@@ -172,9 +171,9 @@ dependencies {
     //Sponge Mixins
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
-    //Handcrafted
-    implementation fg.deobf("maven.modrinth:handcrafted:3.0.6")
-    implementation fg.deobf("maven.modrinth:resourceful-lib:2.1.29")
+    //Handcrafted, mod should become mod-agnostic and be able to work without those now. TODO: Remove those before release.
+//    implementation fg.deobf("maven.modrinth:handcrafted:3.0.6")
+//    implementation fg.deobf("maven.modrinth:resourceful-lib:2.1.29")
 
 }
 
@@ -196,7 +195,6 @@ tasks.named('processResources', ProcessResources).configure {
     }
 }
 
-// Example for how to get properties into the manifest for reading at runtime.
 tasks.named('jar', Jar).configure {
     manifest {
         attributes(["Specification-Title"     : mod_id,
@@ -208,7 +206,6 @@ tasks.named('jar', Jar).configure {
                     "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")])
     }
 
-    // This is the preferred method to reobfuscate your jar file
     finalizedBy 'reobfJar'
 }
 
