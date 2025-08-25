@@ -21,10 +21,14 @@ public abstract class LivingEntityMixin extends Entity {
         super(pEntityType, pLevel);
     }
 
+    /**
+     * Intends to systemically map the player to the kind of bed they're sleeping in. This will work for modded beds as
+     * long as they extend {@link BedBlock} and call the {@link LivingEntity#startSleeping(BlockPos)} method to make the player sleep.
+     */
     @WrapOperation(method = "startSleeping", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/world/level/block/state/BlockState;setBedOccupied(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/entity/LivingEntity;Z)V"
     ))
-    private void foo(BlockState instance, Level level, BlockPos blockPos, LivingEntity livingEntity, boolean b, Operation<Void> original) {
+    private void registerPlayerAndBed(BlockState instance, Level level, BlockPos blockPos, LivingEntity livingEntity, boolean b, Operation<Void> original) {
         original.call(instance, level, blockPos, livingEntity, b);
         if(livingEntity instanceof ServerPlayer player) {
             Block block = instance.getBlock();
@@ -34,10 +38,3 @@ public abstract class LivingEntityMixin extends Entity {
         }
     }
 }
-//    @Inject(method = "startSleepInBed", at = @At(value = "HEAD")) //? Target ServerPlayer instead?
-//    private void registerPlayersBed(BlockPos pBedPos, CallbackInfoReturnable<Either<Player.BedSleepingProblem, Unit>> cir) {
-//        if(!this.level().isClientSide()) {
-//            Block block = this.level().getBlockState(pBedPos).getBlock();
-//            SleepingOperations.registerPlayerAndBed((Player)(Object)this, (BedBlock)block);
-//        }
-//    }
