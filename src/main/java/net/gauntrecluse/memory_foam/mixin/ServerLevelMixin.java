@@ -29,6 +29,7 @@ public abstract class ServerLevelMixin extends Level implements WorldGenLevel {
     }
 
 
+    //! Replace with deep sleep detection.
     @WrapOperation(method = "wakeUpAllPlayers",
             at = @At(value = "INVOKE",
             target = "Ljava/util/List;forEach(Ljava/util/function/Consumer;)V"))
@@ -40,14 +41,3 @@ public abstract class ServerLevelMixin extends Level implements WorldGenLevel {
         });
     }
 }
-
-
-//! Crashes in prod due to something to do with not being able to find the lambda to target.
-//* To avoid lambda related troubleshooting, this was replaced with wrapping the forEach instead of the Consumer lambda.
-//    @WrapOperation(method = "lambda$wakeUpAllPlayers$7", at = @At(value = "INVOKE",
-//            target = "Lnet/minecraft/server/level/ServerPlayer;stopSleepInBed(ZZ)V"))
-//    private static void addWakeupOps(ServerPlayer instance, boolean pWakeImmediately, boolean pUpdateLevelForSleepingPlayers, Operation<Void> original) {
-//        original.call(instance, pWakeImmediately, pUpdateLevelForSleepingPlayers);
-//        SleepingOperations.applyWakeupEffects(instance);
-//        SleepingOperations.playerBedRegistry.remove(instance.getUUID());
-//    }
