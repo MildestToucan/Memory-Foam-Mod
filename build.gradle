@@ -29,14 +29,6 @@ java {
 }
 
 minecraft {
-    // The mappings can be changed at any time and must be in the following format.
-    // Channel:   Version:
-    // official   MCVersion             Official field/method names from Mojang mapping files
-    // parchment  YYYY.MM.DD-MCVersion  Open community-sourced parameter names and javadocs layered on top of official
-    //
-    // You must be aware of the Mojang license when using the 'official' or 'parchment' mappings.
-    // See more information here: https://github.com/MinecraftForge/MCPConfig/blob/master/Mojang.md
-    //
     // Parchment is an unofficial project maintained by ParchmentMC, separate from MinecraftForge
     // Additional setup is needed to use their mappings: https://parchmentmc.org/docs/getting-started
     //
@@ -137,20 +129,6 @@ repositories {
     // Put repositories for dependencies here
     // ForgeGradle automatically adds the Forge maven and Maven Central for you
 
-    //Useless once handcrafted is removed. TODO: Remove once handcrafted dependency is removed.
-//    exclusiveContent{
-//        forRepository{
-//            maven{
-//                name = "Modrinth"
-//                url = "https://api.modrinth.com/maven"
-//            }
-//        }
-//        forRepositories(fg.repository)
-//        filter {
-//            includeGroup "maven.modrinth"
-//        }
-//    }
-
 
     // If you have mod jar dependencies in ./libs, you can declare them as a repository like so.
     // See https://docs.gradle.org/current/userguide/declaring_repositories.html#sub:flat_dir_resolver
@@ -171,9 +149,7 @@ dependencies {
     //Sponge Mixins
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
-    //Handcrafted, mod should become mod-agnostic and be able to work without those now. TODO: Remove those before release.
-//    implementation fg.deobf("maven.modrinth:handcrafted:3.0.6")
-//    implementation fg.deobf("maven.modrinth:resourceful-lib:2.1.29")
+
 
 }
 
