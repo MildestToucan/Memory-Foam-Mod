@@ -2,76 +2,119 @@ package net.gauntrecluse.memory_foam;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
+import net.gauntrecluse.memory_foam.util.cooldown_cap.CDCapProvider;
+import net.gauntrecluse.memory_foam.util.cooldown_cap.IPlayerEffectCDCap;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.BedBlock;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.slf4j.Logger;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*; //? TODO: probably replace with single class imports later.
 
 /**
- * Class containing all operations and data relating to the mod's changes to sleeping, for the sake of being tidy. <br>
- * Logger and usages are commented out for releases, but still there for debugging in development.
+ * Class containing all operations and data relating to the mod's changes to sleeping,
+ * for the sake of being subjectively tidy.
  */
 public class SleepingOperations {
+    private static final Logger LOGGER = MemoryFoam.LOGGER;
 
 
     public static Map<UUID, BedBlock> playerBedRegistry = new HashMap<>();
 
     public static SetMultimap<String, MobEffectInstance> bedToEffectsRegistry = HashMultimap.create();
 
+    public static int effectCooldown;
+
+    //We register the player's UUID because we have no interest in the other values at that point.
     public static void registerPlayerAndBed(Player player, BedBlock bedBlock) {
         playerBedRegistry.put(player.getUUID(), bedBlock);
     }
 
 
     /**
-     * @param effectResourceLoc The name of the effect under the ResourceLocation, including the modid if using a mod. Such that
-     *                          {@code modid:modeffect}. Defaults to {@code minecraft:effect} if no valid namespace is provided.
-     *                          For example, {@code absorption} would be defaulted as {@code minecraft:absorption}
-     * @return the {@code MobEffect} object based on the input-based ResourceLocation.
-     * @see ResourceLocation#tryParse(String)
+     * Shorthand method for getting a mob effect via ForgeRegistries and {@link ResourceLocation#tryParse(String)}
      */
-    public static MobEffect getEffectFromName(String effectResourceLoc) {
-        ResourceLocation key = ResourceLocation.tryParse(effectResourceLoc);
-        return ForgeRegistries.MOB_EFFECTS.getValue(key);
+    public static MobEffect getEffectFromResourceLoc(String effectResourceLoc) {
+        return ForgeRegistries.MOB_EFFECTS.getValue(ResourceLocation.tryParse(effectResourceLoc));
     }
     /**
-     * Uses {@link #getEffectFromName(String)} and parameters to create a {@code MobEffectInstance} to put into the
-     * {@code bedToEffectsRegistry}.
-     * @param bedType The type of Bed based on the bed's class name in source code. E.g. just put "FancyBedBlock" for class {@code FancyBedBlock}.
-     * @param effectType See {@link #getEffectFromName(String)} for instructions.
-     * @param effectLength Length of the effect in SECONDS, assuming a tick speed of 20. Defaults to 0.
-     * @param effectAmplifier How much to amplify the effects by. Defaults to 0.
+     * Maps the {@code bedType} parameter parsed from config to a constructed {@link MobEffectInstance} in {@code bedToEffectRegistry}. <br>
+     * Parameters should be supplied by the config. Refer to it for instructions on parameter formatting.
      */
     public static void addToBedEffectRegistry(String bedType, String effectType, int effectLength, int effectAmplifier) {
-        MobEffect typeAsMobEffect = getEffectFromName(effectType);
+        LOGGER.warn("addToBedEffectRegistry called with parameters: {}, {}, {}, {}", bedType, effectType, effectLength, effectAmplifier);
+        MobEffect typeAsMobEffect = getEffectFromResourceLoc(effectType);
         MobEffectInstance effectInstance = new MobEffectInstance(typeAsMobEffect, (effectLength * 20), effectAmplifier);
-        bedToEffectsRegistry.put(bedType.toLowerCase(), effectInstance);
+        bedToEffectsRegistry.put(bedType, effectInstance);
     }
 
+    /**
+     * Applies effects upon waking up based on config values and the bed type the player slept in.
+     */
+    public static void applyWakeupEffects(ServerPlayer player) {
+        LOGGER.info("applyWakeupEffects called.");
+        long gameTime = player.level().getGameTime();
 
-    public static void applyWakeupEffects(Player player) {
+        LazyOptional<IPlayerEffectCDCap> lazyOptional = player.getCapability(CDCapProvider.CD_CAP_CAPABILITY);
+        if(lazyOptional.isPresent()) {
+            IPlayerEffectCDCap capInstance = lazyOptional.orElse(null); //isPresent works as a null check.
+
+            long lastTimeSet = capInstance.getLastTimeUsed();
+
+
+
+            if(gameTime - lastTimeSet < effectCooldown) {
+                LOGGER.warn("The effect is still on cooldown, cancelling applyWakeupEffects.");
+                LOGGER.warn("Remaining cooldown time in ticks {}", (effectCooldown - (gameTime - lastTimeSet)));
+                return;
+            }
+            LOGGER.warn("Setting new cooldown.");
+            capInstance.setLastTimeUsed(gameTime);
+        } else {
+            LOGGER.error("lazyOptional's cap instance is null or invalidated. Disregarding cooldown operations.");
+        }
+        LOGGER.info("Starting post cooldown wakeup operations.");
+        LOGGER.warn("bedToEffectsRegistry: {}", bedToEffectsRegistry.keys());
+
+        //We give the option to map effects to all beds.
+        //At that point, we also do not need to know if the player is registered to that type of bed.
+        if(bedToEffectsRegistry.containsKey("all")) {
+            LOGGER.info("bed-effect config entry with all keyword detected. Applying effects associated to all beds.");
+            Set<MobEffectInstance> allBedsEffects = new HashSet<>(bedToEffectsRegistry.get("all"));
+            for(MobEffectInstance current : allBedsEffects) {
+                player.addEffect(new MobEffectInstance(current));
+            }
+        }
         UUID playerId = player.getUUID();
 
         if(!playerBedRegistry.containsKey(playerId)) {
-            return;
-        }
-        String bedTypeSleptIn = playerBedRegistry.get(playerId).getClass().getSimpleName().toLowerCase();
-        if(!bedToEffectsRegistry.containsKey(bedTypeSleptIn)) {
+            LOGGER.warn("Can't find UUID of player {} in playerBedRegistry!", player.getName());
+            LOGGER.warn("Cancelling applyWakeUpEffects call");
             return;
         }
 
-        final Set<MobEffectInstance> effectSet = bedToEffectsRegistry.get(bedTypeSleptIn);
+        //! relying on getSimpleName might be brittle. Thorough testing is needed.
+        String bedTypeSleptIn = playerBedRegistry.get(playerId).getClass().getSimpleName().toLowerCase();
+        LOGGER.info("bed type slept in of the player identified as {}", bedTypeSleptIn);
+
+
+        if(!bedToEffectsRegistry.containsKey(bedTypeSleptIn)) {
+            LOGGER.warn("bedTypeSleptIn {} not found in bed-effects registry.", bedTypeSleptIn);
+            LOGGER.warn("Cancelling applyWakeUpEffects call");
+            return;
+        }
+
+        Set<MobEffectInstance> effectSet = new HashSet<>(bedToEffectsRegistry.get(bedTypeSleptIn));
 
         for(MobEffectInstance current : effectSet) {
-            MobEffectInstance copy = new MobEffectInstance(current);
-            player.addEffect(copy);
+            LOGGER.info("Applying applicable effects to player.");
+            player.addEffect(new MobEffectInstance(current));
         }
+        LOGGER.warn("end of applyWakeupEffects call with no early return.");
     }
 }
