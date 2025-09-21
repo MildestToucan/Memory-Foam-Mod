@@ -29,7 +29,12 @@ public abstract class ServerLevelMixin extends Level implements WorldGenLevel {
     }
 
 
-    //! Replace with deep sleep detection.
+    /*
+     Arguably this should be replaced by detecting when players are waking up after a "deep" sleep. Meaning,
+     detecting when the player's been sleeping long enough that, if enough players are sleeping to allow a skip,
+     the server would typically wake up all players. This would allow to have our effects apply not just when enough
+     players go to sleep to skip the night.
+    */
     @WrapOperation(method = "wakeUpAllPlayers",
             at = @At(value = "INVOKE",
             target = "Ljava/util/List;forEach(Ljava/util/function/Consumer;)V"))

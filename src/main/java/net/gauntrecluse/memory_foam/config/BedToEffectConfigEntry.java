@@ -4,15 +4,17 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Custom data type used to have a custom and more flexible formatting for config purposes.
- * @param bedType a String that corresponds to a case-ignoring version of the given bed's class. Implemented by working with {@link Class#getSimpleName()}
- * @param effectType a String that corresponds to the ResourceLocation declaration of a {@link net.minecraft.world.effect.MobEffect}. Defaults to namespace {@code "minecraft:"} if none provided. Case-sensitive.
+ * @param bedType a String that corresponds to a case agnostic version of the given bed's class.
+ *                Implemented by working with {@link Class#getSimpleName()}
+ * @param effectType a String that corresponds to the ResourceLocation declaration of a {@link net.minecraft.world.effect.MobEffect}.
+ *                   Defaults to namespace {@code "minecraft:"} if none provided. Case-sensitive.
  * @param effectLength an integer that corresponds to the amount of seconds the effect should last for assuming server runs at 20 Ticks per second.
  * @param effectAmplifier an integer that corresponds to the number value you'd use in a {@code /effect give} command's amplifier field.
  */
 public record BedToEffectConfigEntry(String bedType, String effectType, int effectLength, int effectAmplifier) {
 
     /**
-     * Picks apart a string based on the format {@code "bedType|effectType|effectLength|effectAmplifier"} <br>
+     * Parses a string based on the formatting {@code "bedType|effectType|effectLength|effectAmplifier"}
      */
     public static BedToEffectConfigEntry fromString(String entry) throws IllegalArgumentException {
         String[] parts = entry.split("\\|");
