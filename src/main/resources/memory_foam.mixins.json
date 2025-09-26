@@ -1,19 +1,18 @@
 {
-  "required": true,
-  "minVersion": "0.8",
-  "package": "net.gauntrecluse.memory_foam.mixin",
-  "compatibilityLevel": "JAVA_17",
-  "refmap": "memory_foam.refmap.json",
-  "mixins": [
-    "LivingEntityMixin",
-    "ServerLevelMixin"
-  ],
-  "client": [
-  ],
-  "injectors": {
-    "defaultRequire": 1
-  },
-  "overwrites": {
-    "requireAnnotations": true
+    "required": true,
+    "minVersion": "0.8",
+    "package": "net.gauntrecluse.memory_foam.mixin",
+    "compatibilityLevel": "JAVA_17",
+    "refmap": "memory_foam.refmap.json",
+    "mixins": [
+        "LivingEntityMixin"
+    ],
+    "client": [
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    },
+    "overwrites": {
+        "requireAnnotations": true
   }
 }

@@ -22,8 +22,10 @@ public class MemoryFoamConfig {
                 .comment("example config: bed_to_effect_registry[\"BedBlock|minecraft:absorption|10|3\"]\nthe example would give absorption for ten seconds with an amplifier of three after waking up from a vanilla bed.\nDifferent entries can be put in separate strings separated by a comma. You may have more than one entry for the same bed block.")
                 .comment("Using the word \"all\" in the bedType field will make the following effect apply regardless of the kind of bed the player slept in.")
                 .comment("Separate entries should still be put in the same brackets, but in separate strings, aka separate quotation marks. If either the effectLength or the effectAmplifier field is empty, the mod will default it to 0")
+                .comment("A default config is provided. fancybedblock is for HandCrafted's fancy beds, sleepingbagblock and hammockblock are from Comforts.")
+                .worldRestart()
                 .defineListAllowEmpty("bed_to_effect_registry",
-                        List.of(""),
+                        List.of("fancybedblock|absorption|650|3", "sleepingbagblock|speed|60|2", "hammockblock|strength|120", "bedblock|night_vision|1000"),
                         o -> o instanceof String
                 );
 
@@ -31,6 +33,7 @@ public class MemoryFoamConfig {
                 .comment("Cooldown for the bed effects, meant to prevent spam usage. Value is in seconds.")
                 .comment("Will treat any negative value or excessively high value as 0")
                 .comment("Default is 300 seconds, AKA 5 minutes")
+                .worldRestart()
                 .define("effect_cooldown", 300);
 
         SERVER_CONFIG_SPEC = builder.build();

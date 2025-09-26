@@ -7,15 +7,17 @@ import net.gauntrecluse.memory_foam.util.cooldown_cap.CDCapProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
+import net.minecraftforge.event.entity.player.PlayerWakeUpEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
 
@@ -27,21 +29,21 @@ public class MemoryFoam {
     public static final String MODID = "memory_foam";
     public static final Logger LOGGER = LogUtils.getLogger();
 
+    @SuppressWarnings("removal")
     public MemoryFoam() {
+
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-
-        modEventBus.addListener(this::commonSetup); //? TODO: remove if common setup is never actually used.
-
-        MinecraftForge.EVENT_BUS.register(this);
-        MinecraftForge.EVENT_BUS.addGenericListener(Entity.class, MemoryFoam::onAttachCapabilitiesEvent);
-        MinecraftForge.EVENT_BUS.addListener(this::onPlayerCloneEvent);
+        IEventBus forgeEventBus = MinecraftForge.EVENT_BUS;
+        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, MemoryFoamConfig.SERVER_CONFIG_SPEC, "memoryfoamconfig.toml");
 
         modEventBus.addListener(this::onModConfigEvent);
+        forgeEventBus.addGenericListener(Entity.class, MemoryFoam::onAttachCapabilitiesEvent);
+        forgeEventBus.addListener(this::onPlayerCloneEvent);
+        forgeEventBus.addListener(this::onWakeUpEvent);
 
-        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, MemoryFoamConfig.SERVER_CONFIG_SPEC, "memoryfoamconfig.toml");
-    }
 
-    private void commonSetup(final FMLCommonSetupEvent event) {
+
+
     }
 
     public void onModConfigEvent(ModConfigEvent event) {
@@ -57,7 +59,7 @@ public class MemoryFoam {
         SleepingOperations.effectCooldown = MemoryFoamConfig.parseCooldownTime() * 20;
     }
 
-    private static void onAttachCapabilitiesEvent(AttachCapabilitiesEvent<Entity> event) {
+    public static void onAttachCapabilitiesEvent(AttachCapabilitiesEvent<Entity> event) {
         if(!(event.getObject() instanceof ServerPlayer player)) return;
 
         event.addCapability(
@@ -76,5 +78,13 @@ public class MemoryFoam {
                         newCap -> newCap.setLastTimeUsed(oldCap.getLastTimeUsed())
                 )
         );
+    }
+
+    public void onWakeUpEvent(PlayerWakeUpEvent event) {
+        if(!(event.getEntity() instanceof ServerPlayer serverPlayer)) return;
+        if(serverPlayer.getSleepTimer() >= 100) {
+            SleepingOperations.applyWakeUpEffects(serverPlayer);
+            SleepingOperations.deregisterPlayerAndBed(serverPlayer.getUUID());
+        }
     }
 }

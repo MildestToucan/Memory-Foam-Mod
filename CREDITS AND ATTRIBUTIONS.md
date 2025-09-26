@@ -16,9 +16,11 @@ Forge by [Minecraft Forge](https://github.com/MinecraftForge)
 
 
 ### Mixin tools:  
-**Sponge Mixins** by [SpongePowered](https://github.com/SpongePowered)  
+**Sponge Mixins** by [SpongePowered](https://github.com/SpongePowered) & contributors  
 [License](https://github.com/SpongePowered/Mixin/blob/master/LICENSE.txt) (MIT as of 09/08/2025)  
-[SpongePowered Staff list](https://docs.spongepowered.org/stable/en/about/staff.html)
+[SpongePowered Staff list](https://docs.spongepowered.org/stable/en/about/staff.html)  
+**MixinExtras** by [Llamalad7](https://github.com/LlamaLad7) & contributors  
+[License](https://github.com/LlamaLad7/MixinExtras?tab=MIT-1-ov-file) (MIT as of 22/09/2025)  
 
 
 ### Minecraft Java Edition:  
