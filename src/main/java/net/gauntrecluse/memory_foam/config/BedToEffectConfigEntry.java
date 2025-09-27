@@ -10,8 +10,9 @@ import org.jetbrains.annotations.NotNull;
  *                   Defaults to namespace {@code "minecraft:"} if none provided. Case-sensitive.
  * @param effectLength an integer that corresponds to the amount of seconds the effect should last for assuming server runs at 20 Ticks per second.
  * @param effectAmplifier an integer that corresponds to the number value you'd use in a {@code /effect give} command's amplifier field.
+ * @param hideParticles a boolean that corresponds to whether the particles should be hidden or not.
  */
-public record BedToEffectConfigEntry(String bedType, String effectType, int effectLength, int effectAmplifier) {
+public record BedToEffectConfigEntry(String bedType, String effectType, int effectLength, int effectAmplifier, boolean hideParticles) {
 
     /**
      * Parses a string based on the formatting {@code "bedType|effectType|effectLength|effectAmplifier"}
@@ -19,17 +20,18 @@ public record BedToEffectConfigEntry(String bedType, String effectType, int effe
     public static BedToEffectConfigEntry fromString(String entry) throws IllegalArgumentException {
         String[] parts = entry.split("\\|");
 
-        if(parts.length < 2 || parts.length > 4) { //We don't support less than two or more than 4 elements per entry.
+        if(parts.length < 2 || parts.length > 5) { //We don't support less than two or more than 4 elements per entry.
             throw new IllegalArgumentException("Invalid BedtoEffectConfigEntry instance length in config " + entry);
         }
 
         String bedType = parts[0];
         String effectType = parts[1];
-        int effectLength = (parts.length >= 3) ? Integer.parseInt(parts[2]) : 0; //Default effectLength and effectAmplifier to 0 if not present.
-        int effectAmplifier = (parts.length == 4) ? Integer.parseInt(parts[3]) : 0;
+        int effectLength = parts.length >= 3 ? Integer.parseInt(parts[2]) : 0;
+        int effectAmplifier = parts.length >= 4 ? Integer.parseInt(parts[3]) : 0;
+        boolean hideParticles = parts.length == 5 && Boolean.parseBoolean(parts[4]);
         if(effectLength < 0) effectLength = 0;
         if(effectAmplifier < 0 || effectAmplifier > 255) effectAmplifier = 0;
-        return new BedToEffectConfigEntry(bedType, effectType, effectLength, effectAmplifier);
+        return new BedToEffectConfigEntry(bedType, effectType, effectLength, effectAmplifier, hideParticles);
     }
 
     @Override

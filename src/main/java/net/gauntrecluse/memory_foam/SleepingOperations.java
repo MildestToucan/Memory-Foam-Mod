@@ -48,67 +48,22 @@ public class SleepingOperations {
      * Maps the {@code bedType} parameter parsed from config to a constructed {@link MobEffectInstance} in {@code bedToEffectRegistry}. <br>
      * Parameters should be supplied by the config. Refer to it for instructions on parameter formatting.
      */
-    public static void addToBedEffectRegistry(String bedType, String effectType, int effectLength, int effectAmplifier) {
+    public static void addToBedEffectRegistry(String bedType, String effectType, int effectLength, int effectAmplifier, boolean hideParticles) {
         MobEffect typeAsMobEffect = ForgeRegistries.MOB_EFFECTS.getValue(ResourceLocation.tryParse(effectType));
-        MobEffectInstance effectInstance = new MobEffectInstance(typeAsMobEffect, (effectLength * 20), effectAmplifier);
+        MobEffectInstance effectInstance = new MobEffectInstance(typeAsMobEffect, effectLength * 20, effectAmplifier, false, !hideParticles);
         bedToEffectsRegistry.put(bedType, effectInstance);
     }
 
-    @Deprecated(forRemoval = true)
-    public static void OLDapplyWakeUpEffects(ServerPlayer player) {
-        long gameTime = player.level().getGameTime();
-
-        LazyOptional<IPlayerEffectCDCap> lazyOptional = player.getCapability(CDCapProvider.CD_CAP_CAPABILITY);
-        if(lazyOptional.isPresent()) {
-            IPlayerEffectCDCap capInstance = lazyOptional.orElse(null); //isPresent works as a null check.
-
-            long lastTimeSet = capInstance.getLastTimeUsed();
-
-            if(gameTime - lastTimeSet < effectCooldown) {
-                return;
-            }
-            capInstance.setLastTimeUsed(gameTime);
-        }
-
-        if(bedToEffectsRegistry.containsKey("all")) {
-            Set<MobEffectInstance> allBedsEffects = new HashSet<>(bedToEffectsRegistry.get("all"));
-            for(MobEffectInstance current : allBedsEffects) {
-                player.addEffect(new MobEffectInstance(current));
-            }
-        }
-        UUID playerId = player.getUUID();
-
-        if(!playerBedRegistry.containsKey(playerId)) {
-            return;
-        }
-
-        //! relying on getSimpleName might be brittle. Thorough testing is needed.
-        //This appears to work for obfuscated code like Vanilla beds, but should be tested in different prod environments.
-        String bedTypeSleptIn = playerBedRegistry.get(playerId).getClass().getSimpleName().toLowerCase();
-
-
-        if(!bedToEffectsRegistry.containsKey(bedTypeSleptIn)) {
-            return;
-        }
-
-        Set<MobEffectInstance> effectSet = new HashSet<>(bedToEffectsRegistry.get(bedTypeSleptIn));
-
-        for(MobEffectInstance current : effectSet) {
-            player.addEffect(new MobEffectInstance(current));
-        }
-    }
-
-
 
     public static void applyWakeUpEffects(ServerPlayer player) {
-        final long gameTime = player.serverLevel().getGameTime();
+        long gameTime = player.serverLevel().getGameTime();
         LazyOptional<IPlayerEffectCDCap> lazyOptional = player.getCapability(CDCapProvider.CD_CAP_CAPABILITY);
         if(lazyOptional.isPresent()) {
             IPlayerEffectCDCap capInstance = lazyOptional.orElse(null);
 
-            final long lastTimeUsed = capInstance.getLastTimeUsed();
+            long lastTimeUsed = capInstance.getLastTimeUsed();
 
-            if(gameTime - lastTimeUsed < effectCooldown) {
+            if(lastTimeUsed != 0 && gameTime - lastTimeUsed < effectCooldown) {
                 return;
             }
 

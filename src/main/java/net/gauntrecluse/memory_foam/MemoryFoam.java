@@ -7,11 +7,9 @@ import net.gauntrecluse.memory_foam.util.cooldown_cap.CDCapProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.event.entity.player.PlayerWakeUpEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -53,7 +51,8 @@ public class MemoryFoam {
             SleepingOperations.addToBedEffectRegistry(current.bedType().toLowerCase(),
                     current.effectType(),
                     current.effectLength(),
-                    current.effectAmplifier()
+                    current.effectAmplifier(),
+                    current.hideParticles()
             );
         }
         SleepingOperations.effectCooldown = MemoryFoamConfig.parseCooldownTime() * 20;

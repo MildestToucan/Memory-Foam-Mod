@@ -12,20 +12,19 @@ public class MemoryFoamConfig {
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> ENTRIES;
     public static final ForgeConfigSpec.ConfigValue<Integer> EFFECT_COOLDOWN;
 
-    static
-    {
+    static {
         ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
 
         ENTRIES = builder
-                .comment("List of bed to effect entries, following the format: \"bedType|effectType|effectLength|effectAmplifier\"")
-                .comment("Such that:\nbedType is the bed block's class name (e.g. FancyBedBlock, not case-sensitive),\neffectType is the ResourceLocation of the effect (e.g. minecraft:absorption or modid:modeffect, case-sensitive) and\neffectLength is in seconds.\neffectAmplifier works the same as in a command.")
-                .comment("example config: bed_to_effect_registry[\"BedBlock|minecraft:absorption|10|3\"]\nthe example would give absorption for ten seconds with an amplifier of three after waking up from a vanilla bed.\nDifferent entries can be put in separate strings separated by a comma. You may have more than one entry for the same bed block.")
+                .comment("List of bed to effect entries, following the format: \"bedType|effectType|effectLength|effectAmplifier|hideParticles\"")
+                .comment("Such that:\nbedType is the bed block's class name (e.g. FancyBedBlock, not case-sensitive),\neffectType is the ResourceLocation of the effect (e.g. minecraft:absorption or modid:modeffect, case-sensitive. When working with vanilla effects, adding minecraft: is optional. E.g. minecraft:absorption and absorption will work the same. This doesn't work for modded effects.) and\neffectLength is in seconds.\neffectAmplifier works the same as in a command.\nhideParticles is set to true if you want the effect's particles to be hidden.")
+                .comment("example config: bed_to_effect_registry[\"BedBlock|minecraft:absorption|10|3|true\"]\nthe example would give absorption for ten seconds with an amplifier of three after waking up from a vanilla bed and hide the particles. \nDifferent entries can be put in separate strings separated by a comma. You may have more than one entry for the same bed block.")
                 .comment("Using the word \"all\" in the bedType field will make the following effect apply regardless of the kind of bed the player slept in.")
                 .comment("Separate entries should still be put in the same brackets, but in separate strings, aka separate quotation marks. If either the effectLength or the effectAmplifier field is empty, the mod will default it to 0")
                 .comment("A default config is provided. fancybedblock is for HandCrafted's fancy beds, sleepingbagblock and hammockblock are from Comforts.")
                 .worldRestart()
                 .defineListAllowEmpty("bed_to_effect_registry",
-                        List.of("fancybedblock|absorption|650|3", "sleepingbagblock|speed|60|2", "hammockblock|strength|120", "bedblock|night_vision|1000"),
+                        List.of("fancybedblock|absorption|650|3|true", "sleepingbagblock|speed|60|2", "hammockblock|strength|120", "bedblock|night_vision|1000"),
                         o -> o instanceof String
                 );
 
